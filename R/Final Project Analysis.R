@@ -1,3 +1,3 @@
-#Loading polling place data from GitHub TidyTuesday repo
-polling_places <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2024/2024-01-16/polling_places.csv')
+#Loading COVID-19 death count data by week ending date and state, downloaded from CDC
+install.packages("here")
 
