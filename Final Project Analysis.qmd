@@ -1,20 +1,33 @@
-#Loading COVID-19 death count data by week ending date and state, downloaded from CDC
-install.packages("here")
-install.packages("dplyr")
-install.packages("gtsummary")
+---
+title: "EPI 590R: Final Project Analysis"
+author: "Aditya Mehta"
+format: html
+editor: visual
+css: styles.css
+execute:
+  echo: false
+---
 
+```{r}
+#| label: Loading Data
+#| output: false
 library(here)
 library(tidyverse)
 library(dplyr)
 library(gtsummary)
 library(janitor)
 
+#Loading COVID-19 death count data by week ending date and state, downloaded from CDC
 data <- read_csv(here::here("data/raw/COVID_Data.csv"))
 
 #Cleaning variable names to reflect R formatting with underscores
 data <- janitor::clean_names(data)
+```
 
-#Table of descriptive statistics with categorical variables
+```{r}
+#| label: tbl-one
+#| tbl-cap: Descriptive Statistics of Included Data
+
 Table_1 <- tbl_summary(
   data, 
   by = race_or_hispanic_origin, 
@@ -26,9 +39,15 @@ Table_1 <- tbl_summary(
     total_deaths ~ "Total Deaths",
     sex ~ "Sex"
   ),
-  missing_text = "Missing")
-print(Table_1)
+  missing_text = "Missing") |>
+  bold_labels() |>
+  modify_header(label="**Variable**")
+Table_1
+```
 
+```{r}
+#| label: tbl-two
+#| tbl-cap: Linear regression model, x = race/Hispanic origin, sex, education level, age group, y = COVID-19 deaths
 #Defining variables as factors for use in linear regression model
 data$race_or_hispanic_origin <- as.factor(data$race_or_hispanic_origin)
 data$sex <- as.factor(data$sex)
@@ -51,15 +70,20 @@ new_table_function <- function(model){
       education_level ~ "Education Level",
       age_group ~ "Age Group"
     )
-  )
+  ) |>
+    bold_labels() |>
+    modify_header(label="**Variable**")
 }
 
 new_table_function(linear_model)
+```
 
-#Creating a histogram as my figure
+```{r}
+#| label: fig-hist
+#| fig-cap: This represents a histogram of residuals from the linear regression model.
 
 residuals <- residuals(linear_model)
 hist(residuals, main = "Histogram of Residuals", xlab = "Residuals", col = "turquoise",
      border = "black")
 
-
+```
