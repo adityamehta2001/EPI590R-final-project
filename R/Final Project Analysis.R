@@ -7,33 +7,70 @@ library(here)
 library(tidyverse)
 library(dplyr)
 library(gtsummary)
+library(janitor)
 
-dat <- read_csv(here::here("data/raw/data.csv"))
+data <- read_csv(here::here("data/raw/COVID_Data.csv"))
 
-label = list (
-  Total_Deaths <- "Total Deaths",
-  COVID_19_Deaths <- "COVID-19 Deaths",
-  Influenza_Deaths <- "Influenza Deaths",
-  Pneumonia_Deaths <- "Pneumonia Deaths",
-  Pneumonia_and_COVID_19_Deaths <- "Pneumonia and COVID-19 Deaths",
-  Pneumonia_Influenza_or_COVID_19_Deaths <- "Pneumonia, Influenza, or COVID-19 Deaths"
-)
+#Table of descriptive statistics with categorical variables
+Table_1 <- tbl_summary(
+  data, 
+  by = race_or_hispanic_origin, 
+  include= c(ends_with("Deaths"), sex, education_level, age_group), 
+  label = list (
+    education_level ~ "Education Level",
+    age_group ~ "Age Group",
+    covid_19_deaths ~ "COVID-19 Deaths",
+    total_deaths ~ "Total Deaths",
+    sex ~ "Sex"
+  ),
+  missing_text = "Missing")
+print(Table_1)
 
-#Table of descriptive statistics
-tbl_summary(dat, by = State, include= c(Total_Deaths,
-                                                   ends_with ("Deaths")), 
-                       missing_text = "Missing")
-#54 states total included, since United States, District of Columbia, Puerto Rico, and NYC all counted as well
-var(dat)
+# Check levels of each factor variable
+levels(as.factor(data$race_or_hispanic_origin))
+levels(data$sex)
+levels(as.factor(data[[education_level]]))
+levels(as.factor(data[[age_group]]))
 
-#Poisson regression table since using discrete mortality counts
-poisson_model <- glm(Total_Deaths ~ COVID_19_Deaths + Pneumonia_Deaths + 
-                       Influenza_Deaths + Pneumonia_and_COVID_19_Deaths +
-                       Pneumonia_Influenza_or_COVID_19_Deaths, 
-                      data = dat, family = poisson()
-                     )
+data$race_or_hispanic_origin <- as.factor(data$race_or_hispanic_origin)
+data$sex <- as.factor(data$sex)
+data$education_level <- as.factor(data$education_level)
+data$age_group <- as.factor(data$age_group)
+
+
+#Linear regression table since using COVID mortality counts
+linear_model <- lm(covid_19_deaths ~ race_or_hispanic_origin +
+                   sex + education_level + age_group, 
+                   data = data)
+
+new_table_function <- function(model){
+  tbl_regression(
+    linear_model,
+    intercept = FALSE,
+    label = list(
+      race_or_hispanic_origin ~ "Race or Hispanic Origin",
+      sex ~ "Sex",
+      education_level ~ "Education Level",
+      age_group ~ "Age Group"
+    )
+  )
+}
+
+new_table_function(linear_model)
+
+
+
+tbl_uvregression(
+  data, 
+  y = covid_19_deaths,
+  include = c(Race, Sex, education_level, age_group),
+  method = glm,
+  method.args = list(family = binomial()),
+  exponentiate = TRUE)
+
+
 
 tbl_regression(
   poission_model, 
   intercept = TRUE,
-  )
+)
