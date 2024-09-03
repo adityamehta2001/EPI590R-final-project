@@ -43,7 +43,11 @@ Table_1 <- tbl_summary(
   bold_labels() |>
   modify_header(label="**Variable**")
 Table_1
+COVID_Deaths_Hispanic <- inline_text(Table_1, variable = covid_19_deaths , column = "stat_1")
+Total_Deaths_Hispanic <- inline_text(Table_1, variable = total_deaths , column = "stat_1")
 ```
+
+As seen in @tbl-one, there were `r nrow(data)` total observations across all the race/Hispanic origin categories, but these were due to how data was standardized across all the categorical variables to ensure that aggregate COVID-19 and total death counts were equal across the different strata. Therefore, this total observation value does not refer to the total number of people included in the mortality data (as evidenced by the larger counts of deaths in each category). Among data collected from Hispanic people, there were `r COVID_Deaths_Hispanic` median deaths (Q1, Q3) from COVID-19 and `r Total_Deaths_Hispanic` median deaths (Q1, Q3) overall. 
 
 ```{r}
 #| label: tbl-two
@@ -77,6 +81,11 @@ new_table_function <- function(model){
 
 new_table_function(linear_model)
 ```
+
+@tbl-two is different from @tbl-one, as it shows results of a multiple linear regression and not solely descriptive statistics about the selected data (which you can find in @tbl-one). @fig-hist, shown below, also demonstrates a histogram plot of the residuals calculated from @tbl-two.
+
+The mean number of COVID-19 deaths among **all races** from this data is `r mean(data$covid_19_deaths, na.rm = TRUE)` deaths.
+
 
 ```{r}
 #| label: fig-hist

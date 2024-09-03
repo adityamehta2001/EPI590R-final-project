@@ -26,7 +26,10 @@ Table_1 <- tbl_summary(
     total_deaths ~ "Total Deaths",
     sex ~ "Sex"
   ),
-  missing_text = "Missing")
+  missing_text = "Missing") |>
+  bold_labels() |>
+  modify_header(label="**Variable**")
+
 print(Table_1)
 
 #Defining variables as factors for use in linear regression model
@@ -51,7 +54,9 @@ new_table_function <- function(model){
       education_level ~ "Education Level",
       age_group ~ "Age Group"
     )
-  )
+  )|>
+    bold_labels() |>
+    modify_header(label="**Variable**")
 }
 
 new_table_function(linear_model)
