@@ -63,10 +63,16 @@ new_table_function <- function(model){
 
 new_table_function(linear_model)
 
-#Creating a histogram as my figure
+#Creating a histogram of residuals as my figure using hist function.
 
 residuals <- residuals(linear_model)
 hist(residuals, main = "Histogram of Residuals", xlab = "Residuals", col = "turquoise",
      border = "black")
 
+#second use of {here} package to save the figure as PNG.
+png(filename = here::here("documents", "residual_histogram.png"))
 
+hist(residuals, main = "Histogram of Residuals", xlab = "Residuals", col = "turquoise",
+     border = "black")
+
+invisible(dev.off())

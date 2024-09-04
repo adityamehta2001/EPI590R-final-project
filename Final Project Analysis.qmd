@@ -100,5 +100,11 @@ residuals <- residuals(linear_model)
 hist_residuals <- hist(residuals, main = "Histogram of Residuals", xlab = "Residuals", col = "turquoise",
      border = "black")
 
+png(filename = here::here("documents", "residual_histogram.png"))
+
+hist(residuals, main = "Histogram of Residuals", xlab = "Residuals", col = "turquoise",
+     border = "black")
+
+invisible(dev.off())
 
 ```
