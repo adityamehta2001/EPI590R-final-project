@@ -57,22 +57,27 @@ As seen in @tbl-one, there were `r nrow(data)` total observations across all the
 
 ```{r}
 #| label: tbl-two
-#| tbl-cap: Linear regression model, x = race/Hispanic origin, sex, education level, age group, y = COVID-19 deaths
+#| tbl-cap: Poisson regression model, x = race/Hispanic origin, sex, education level, age group; y = COVID-19 deaths
+
 #Defining variables as factors for use in linear regression model
 data$race_or_hispanic_origin <- as.factor(data$race_or_hispanic_origin)
 data$sex <- as.factor(data$sex)
 data$education_level <- as.factor(data$education_level)
 data$age_group <- as.factor(data$age_group)
 
-#Linear regression table since using COVID mortality counts
-linear_model <- lm(covid_19_deaths ~ race_or_hispanic_origin +
+#Poisson regression table since using discrete COVID mortality counts
+poisson_model <- glm(covid_19_deaths ~ race_or_hispanic_origin +
                    sex + education_level + age_group, 
-                   data = data)
+                   data = data, family=poisson())
 
-#Created new function for model 
+poisson_model_2 <- glm(total_deaths ~ race_or_hispanic_origin +
+                         sex + education_level + age_group, 
+                       data = data, family=poisson())
+
+#Created new function for Poisson model creation 
 new_table_function <- function(model){
-  tbl_regression(
-    linear_model,
+  reg_tbl <- tbl_regression(
+    model,
     intercept = FALSE,
     label = list(
       race_or_hispanic_origin ~ "Race or Hispanic Origin",
@@ -80,23 +85,36 @@ new_table_function <- function(model){
       education_level ~ "Education Level",
       age_group ~ "Age Group"
     )
-  ) |>
+  )|>
     bold_labels() |>
     modify_header(label="**Variable**")
+  return(reg_tbl)
 }
 
-new_table_function(linear_model)
+new_table_function(model = poisson_model)
 ```
 
 @tbl-two is different from @tbl-one, as it shows results of a multiple linear regression and not solely descriptive statistics about the selected data (which you can find in @tbl-one). @fig-hist, shown below, also demonstrates a histogram plot of the residuals calculated from @tbl-two.
 
 The mean number of COVID-19 deaths among **all races** from this data is `r mean(data$covid_19_deaths, na.rm = TRUE)` deaths.
 
+
+```{r}
+#| label: tbl-three
+#| tbl-cap: Poisson regression model, x = race/Hispanic origin, sex, education level, age group; y = total deaths
+
+#Testing function on different Poisson model that uses total death data
+new_table_function(model = poisson_model_2)
+```
+
+@tbl-three shows another Poisson regression that uses total mortality counts instead of those solely attributed to COVID-19.
+
+
 ```{r}
 #| label: fig-hist
 #| fig-cap: This represents a histogram of residuals from the linear regression model.
 
-residuals <- residuals(linear_model)
+residuals <- residuals(poisson_model)
 hist_residuals <- hist(residuals, main = "Histogram of Residuals", xlab = "Residuals", col = "turquoise",
      border = "black")
 

@@ -40,15 +40,19 @@ data$sex <- as.factor(data$sex)
 data$education_level <- as.factor(data$education_level)
 data$age_group <- as.factor(data$age_group)
 
-#Linear regression table since using COVID mortality counts
-linear_model <- lm(covid_19_deaths ~ race_or_hispanic_origin +
+#Poisson regression table since using discrete COVID mortality counts
+poisson_model <- glm(covid_19_deaths ~ race_or_hispanic_origin +
                    sex + education_level + age_group, 
-                   data = data)
+                   data = data, family=poisson())
 
-#Created new function for model 
+poisson_model_2 <- glm(total_deaths ~ race_or_hispanic_origin +
+                         sex + education_level + age_group, 
+                       data = data, family=poisson())
+
+#Created new function for Poisson model creation 
 new_table_function <- function(model){
-  tbl_regression(
-    linear_model,
+  reg_tbl <- tbl_regression(
+    model,
     intercept = FALSE,
     label = list(
       race_or_hispanic_origin ~ "Race or Hispanic Origin",
@@ -59,9 +63,13 @@ new_table_function <- function(model){
   )|>
     bold_labels() |>
     modify_header(label="**Variable**")
+  return(reg_tbl)
 }
 
-new_table_function(linear_model)
+new_table_function(model = poisson_model)
+
+#Testing function on different Poisson model that uses total death data
+new_table_function(model = poisson_model_2)
 
 #Creating a histogram of residuals as my figure using hist function.
 
