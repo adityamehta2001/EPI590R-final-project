@@ -31,6 +31,8 @@ Table_1 <- tbl_summary(
   modify_header(label="**Variable**")
 
 print(Table_1)
+COVID_Deaths_Hispanic <- inline_text(Table_1, variable = covid_19_deaths , column = "stat_1")
+Total_Deaths_Hispanic <- inline_text(Table_1, variable = total_deaths , column = "stat_1")
 
 #Defining variables as factors for use in linear regression model
 data$race_or_hispanic_origin <- as.factor(data$race_or_hispanic_origin)

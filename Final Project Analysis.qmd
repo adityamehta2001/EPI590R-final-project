@@ -8,6 +8,12 @@ execute:
   echo: false
 ---
 
+## Data Description
+
+This data highlights total deaths and deaths from COVID-19 for people residing in the United States, stratified by educational attainment level (high school graduate/GED, associate degree, or bachelor's degree or more), race/ethnicity, sex, and age group (0-17 years, 18-49 years, 50-64 years, or 65 years and older). All of the data was collected between 2020 and 2021. This data was reported to the National Center for Health Statistics (NCHS) and Division of Vital Statistics (DVS) and retrieved from the Centers for Disease Control (CDC) website.
+
+## Results of Analysis
+
 ```{r}
 #| label: Loading Data
 #| output: false
@@ -47,7 +53,7 @@ COVID_Deaths_Hispanic <- inline_text(Table_1, variable = covid_19_deaths , colum
 Total_Deaths_Hispanic <- inline_text(Table_1, variable = total_deaths , column = "stat_1")
 ```
 
-As seen in @tbl-one, there were `r nrow(data)` total observations across all the race/Hispanic origin categories, but these were due to how data was standardized across all the categorical variables to ensure that aggregate COVID-19 and total death counts were equal across the different strata. Therefore, this total observation value does not refer to the total number of people included in the mortality data (as evidenced by the larger counts of deaths in each category). Among data collected from Hispanic people, there were `r COVID_Deaths_Hispanic` median deaths (Q1, Q3) from COVID-19 and `r Total_Deaths_Hispanic` median deaths (Q1, Q3) overall. 
+As seen in @tbl-one, there were `r nrow(data)` total observations across all the race/Hispanic origin categories, but these were due to how data was standardized across all the categorical variables to ensure that aggregate COVID-19 and total death counts were equal across the different strata. Therefore, this total observation value does not refer to the total number of people included in the mortality data (as evidenced by the larger counts of deaths in each category). Among data collected from Hispanic people, there were `r COVID_Deaths_Hispanic` median deaths (Q1, Q3) from COVID-19 and `r Total_Deaths_Hispanic` median deaths (Q1, Q3) overall.
 
 ```{r}
 #| label: tbl-two
@@ -86,13 +92,13 @@ new_table_function(linear_model)
 
 The mean number of COVID-19 deaths among **all races** from this data is `r mean(data$covid_19_deaths, na.rm = TRUE)` deaths.
 
-
 ```{r}
 #| label: fig-hist
 #| fig-cap: This represents a histogram of residuals from the linear regression model.
 
 residuals <- residuals(linear_model)
-hist(residuals, main = "Histogram of Residuals", xlab = "Residuals", col = "turquoise",
+hist_residuals <- hist(residuals, main = "Histogram of Residuals", xlab = "Residuals", col = "turquoise",
      border = "black")
+
 
 ```
